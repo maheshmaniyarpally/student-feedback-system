@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2 Peer Feedback Hub</title>
+    <link rel="icon" href="https://logodix.com/logo/871250.jpg">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <style>
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div>
+                    <h1>🎓 STUDENT FEEDBACK PORTAL</h1>
+                    <p>PSVM PROJECT</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span id="userInfo" style="color: white; font-size: 14px;"></span>
+                    <button onclick="handleLogout()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <nav>
+            <button class="nav-btn active" onclick="showPage('main', this)">Submit Feedback</button>
+            <button class="nav-btn" onclick="showPage('classes', this)">Class Details</button>
+            <button class="nav-btn" onclick="showPage('filter', this)">Filter by Mentor</button>
+        </nav>
+
+        <div class="content">
+            <!-- Main Page -->
+            <div id="main" class="page active">
+                <h2 style="margin-bottom: 30px; color: #2d3748;">Submit Peer Feedback</h2>
+                
+                <div id="mainMessage"></div>
+
+                <form class="feedback-form" onsubmit="submitFeedback(event)">
+                    <div class="form-group">
+                        <label for="reviewerName">Your Name</label>
+                        <input type="text" id="reviewerName" required placeholder="Enter your name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="topic">Topic</label>
+                        <input type="text" id="topic" required placeholder="Enter topic name (e.g., Python Basics, Web Development)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mentor">Mentor</label>
+                        <select id="mentor" required>
+                            <option value="">Select a mentor</option>
+                        
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rating">Rating (1-10)</label>
+                        <input type="number" id="rating" min="1" max="10" required placeholder="Rate from 1 to 10">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comments">Feedback Comments</label>
+                        <textarea id="comments" required placeholder="Share constructive feedback..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">Submit Feedback</button>
+                </form>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Feedback</h3>
+                        <div class="value" id="totalFeedback">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Average Rating</h3>
+                        <div class="value" id="avgRating">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Mentors</h3>
+                        <div class="value" id="activeMentors">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classes Page -->
+            <div id="classes" class="page">
+                <h2 style="margin-bottom: 30px; color: #2d3748;">Class Details & Statistics</h2>
+                <div id="classesList" class="loading">Loading classes...</div>
+            </div>
+            <!-- Filter Page -->
+            <div id="filter" class="page">
+                <h2 style="margin-bottom: 30px; color: #2d3748;">Filter Feedback by Mentor</h2>
+                <div class="filter-section">
+                    <div class="filter-controls">
+                        <div class="filter-group">
+                            <label for="mentorFilter">Select Mentor</label>
+                            <select id="mentorFilter">
+                                <option value="">All Mentors</option>
+                            </select>
+                        </div>
+                        <button class="filter-btn" onclick="applyFilter()">Apply Filter</button>
+                    </div>
+                </div>
+                <div id="feedbackList" class="loading">Loading feedback...</div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/index.js' %}"></script>
+    <script>
+        // Ensure CSRF token is available - Django sets it automatically
+        // This is just to make sure it's accessible
+        document.addEventListener('DOMContentLoaded', function() {
+            // Try to get CSRF token - if not available, make a request to get it
+            if (!getCookie('csrftoken')) {
+                fetch('/api/stats', {
+                    method: 'GET',
+                    credentials: 'include'
+                }).catch(() => {
+                    // Ignore errors, just trying to get CSRF cookie
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
